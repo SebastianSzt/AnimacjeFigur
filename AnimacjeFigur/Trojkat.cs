@@ -1,16 +1,19 @@
-﻿namespace AnimacjeFigur
+﻿using System.ComponentModel;
+
+namespace AnimacjeFigur
 {
     internal class Trojkat : Figura
     {
+        [Description("Pozycja figury")]
         int position;
 
-        public Trojkat(int width, int height) : base(width, height) 
+        public Trojkat(int width, int height) : base(width, height)
         {
             Random random = new Random();
             position = random.Next(0, 4);
         }
 
-        public Trojkat(string[] line) : base(line) 
+        public Trojkat(string[] line) : base(line)
         {
             position = int.Parse(line[7]);
         }

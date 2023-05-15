@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Configuration;
 using System.Drawing;
 using System.Reflection;
@@ -116,6 +117,52 @@ namespace AnimacjeFigur
             writer.WriteLine(timer1.Enabled);
             writer.Close();
             wczytajToolStripMenuItem.Enabled = true;
+            PrzygotujPola();
+        }
+
+
+        private Dictionary<string, string> dicField = new Dictionary<string, string>();
+        private Dictionary<string, MemberInfo> dicMem = new Dictionary<string, MemberInfo>();
+
+        private void PrzygotujPola()
+        {
+            Type t = this.GetType();
+            MemberInfo[] members = t.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            dicField.Clear();
+            dicMem.Clear();
+
+            foreach (MemberInfo mem in members)
+            {
+                object[] attributes = mem.GetCustomAttributes(true);
+
+                if (attributes.Length != 0 && mem.MemberType.ToString() == "Field")
+                {
+                    string key = "";
+                    foreach (object attribute in attributes)
+                    {
+                        //Console.Write("   {0} ", attribute.ToString());
+                        DescriptionAttribute da = attribute as DescriptionAttribute;
+                        if (da != null)
+                            key = da.Description;
+                    }
+                    FieldInfo f = mem.ReflectedType.GetField(mem.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (f == null)
+                        continue;
+                    object o = mem.ReflectedType.GetField(mem.Name).GetValue(this);
+                    if (o != null)
+                        dicField.Add(key, mem.ReflectedType.GetField(mem.Name).GetValue(this).ToString());
+                    else
+                        dicField.Add(key, "");
+
+                    dicMem.Add(key, mem);
+                }
+            }
+        }
+
+        public void Save()
+        {
+            StreamWriter file = new StreamWriter("test.txt");
+            PrzygotujPola();
         }
     }
 }
