@@ -1,12 +1,21 @@
-﻿namespace AnimacjeFigur
+﻿using System.ComponentModel;
+using System.Reflection;
+
+namespace AnimacjeFigur
 {
     internal class Figura : IFigura
     {
+        [Description("Polozenie x")]
         protected int posX;
+        [Description("Polozenie y")]
         protected int posY;
+        [Description("Predkosc x")]
         protected int vX;
+        [Description("Predkosc y")]
         protected int vY;
+        [Description("Rozmiar figury")]
         protected int size;
+        [Description("Kolor figury")]
         protected Color color;
 
         public Figura(int width, int height)
@@ -65,6 +74,45 @@
         public virtual void Save(StreamWriter writer)
         {
             writer.Write(GetType().FullName + " " + posX + " " + posY + " " + vX + " " + vY + " " + size + " " + color.Name);
+            PrzygotujPola();
+        }
+
+        protected Dictionary<string, string> dicField = new Dictionary<string, string>();
+        protected Dictionary<string, MemberInfo> dicMem = new Dictionary<string, MemberInfo>();
+
+        protected void PrzygotujPola()
+        {
+            Type t = this.GetType();
+            MemberInfo[] members = t.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            dicField.Clear();
+            dicMem.Clear();
+
+            foreach (MemberInfo mem in members)
+            {
+                object[] attributes = mem.GetCustomAttributes(true);
+
+                if (attributes.Length != 0 && mem.MemberType.ToString() == "Field")
+                {
+                    string key = "";
+                    foreach (object attribute in attributes)
+                    {
+                        //Console.Write("   {0} ", attribute.ToString());
+                        DescriptionAttribute da = attribute as DescriptionAttribute;
+                        if (da != null)
+                            key = da.Description;
+                    }
+                    FieldInfo f = mem.ReflectedType.GetField(mem.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (f == null)
+                        continue;
+                    object o = mem.ReflectedType.GetField(mem.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
+                    if (o != null)
+                        dicField.Add(key, mem.ReflectedType.GetField(mem.Name).GetValue(this).ToString());
+                    else
+                        dicField.Add(key, "");
+
+                    dicMem.Add(key, mem);
+                }
+            }
         }
     }
 }
