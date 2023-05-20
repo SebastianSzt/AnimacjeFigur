@@ -4,7 +4,7 @@
     {
         public Okrag(int width, int height) : base(width, height) { }
 
-        public Okrag(string[] line) : base(line) { }
+        public Okrag(string[] lines) : base(lines) { }
 
         public override void Draw(PaintEventArgs e)
         {
@@ -44,12 +44,6 @@
             {
                 posY += vY;
             }
-        }
-
-        public override void Save(StreamWriter writer)
-        {
-            base.Save(writer);
-            writer.WriteLine();
         }
     }
 }

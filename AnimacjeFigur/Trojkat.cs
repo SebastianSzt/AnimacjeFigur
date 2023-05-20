@@ -1,8 +1,11 @@
-﻿namespace AnimacjeFigur
+﻿using System.ComponentModel;
+
+namespace AnimacjeFigur
 {
     internal class Trojkat : Figura
     {
-        int position;
+        [Description("Pozycja figury")]
+        private int position;
 
         public Trojkat(int width, int height) : base(width, height) 
         {
@@ -10,10 +13,7 @@
             position = random.Next(0, 4);
         }
 
-        public Trojkat(string[] line) : base(line) 
-        {
-            position = int.Parse(line[7]);
-        }
+        public Trojkat(string[] lines) : base(lines) { }
 
         public override void Draw(PaintEventArgs e)
         {
@@ -79,12 +79,6 @@
             {
                 posY += vY;
             }
-        }
-
-        public override void Save(StreamWriter writer)
-        {
-            base.Save(writer);
-            writer.WriteLine(" " + position);
         }
     }
 }

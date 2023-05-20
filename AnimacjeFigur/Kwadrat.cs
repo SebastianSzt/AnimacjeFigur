@@ -4,7 +4,7 @@
     {
         public Kwadrat(int width, int height) : base(width, height) { }
 
-        public Kwadrat(string[] line) : base(line) { }
+        public Kwadrat(string[] lines) : base(lines) { }
 
         public override void Draw(PaintEventArgs e)
         {
@@ -43,12 +43,6 @@
             {
                 posY += vY;
             }
-        }
-
-        public override void Save(StreamWriter writer)
-        {
-            base.Save(writer);
-            writer.WriteLine();
         }
     }
 }
