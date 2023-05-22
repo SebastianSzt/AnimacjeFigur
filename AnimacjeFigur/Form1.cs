@@ -1,7 +1,7 @@
-using System;
-using System.Configuration;
-using System.Drawing;
+using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace AnimacjeFigur
 {
@@ -72,24 +72,73 @@ namespace AnimacjeFigur
             }
         }
 
+        private void saveStatus(object sender, EventArgs e)
+        {
+            StreamWriter writer = new StreamWriter("save.txt");
+
+            writer.WriteLine(this.Width + " " + this.Height);
+            writer.WriteLine(timer1.Enabled);
+            writer.WriteLine(figury.Length);
+
+            foreach (Figura figura in figury)
+                figura.Save(writer);
+
+            writer.Close();
+            wczytajToolStripMenuItem.Enabled = true;
+
+            //Serializacja
+            Stream s = new FileStream("save_serialization.txt", FileMode.Create);
+            BinaryFormatter bf = new BinaryFormatter();
+            foreach (Figura figura in figury)
+                bf.Serialize(s, figura);
+            s.Close();
+
+            //xml json
+        }
+
         private void loadStatus(object sender, EventArgs e)
         {
-            StreamReader reader = new StreamReader("save.txt");
+            /*StreamReader reader = new StreamReader("save.txt");
+
             string[] line = reader.ReadLine().Split(' ');
             this.Width = int.Parse(line[0]);
             this.Height = int.Parse(line[1]);
+            bool timer = bool.Parse(reader.ReadLine());
             int ammount = int.Parse(reader.ReadLine());
             figury = new IFigura[ammount];
 
             for (int i = 0; i < ammount; i++)
             {
-                line = reader.ReadLine().Split(' ');
-                figury[i] = (IFigura)Activator.CreateInstance(Type.GetType(line[0]), new object[] { line });
+                reader.ReadLine();
+                string className = reader.ReadLine().Split('\t')[1];
+
+                Type type = Type.GetType(className);
+
+                if (type != null)
+                {
+                    ConstructorInfo constructor = type.GetConstructor(new Type[] { typeof(string[]) });
+
+                    if (constructor != null)
+                    {
+                        string[] figuraData = new string[int.Parse(reader.ReadLine().Split('\t')[1])];
+
+                        for (int j = 0; j < figuraData.Length; j++)
+                        {
+                            figuraData[j] = reader.ReadLine();
+                        }
+
+                        IFigura figura = (IFigura)constructor.Invoke(new object[] { figuraData });
+
+                        figury[i] = figura;
+                    }
+                }
             }
+
+            reader.Close();
 
             panel1.Refresh();
 
-            if (bool.Parse(reader.ReadLine()))
+            if (timer)
             {
                 timer1.Start();
                 uruchomToolStripMenuItem.Enabled = false;
@@ -100,22 +149,17 @@ namespace AnimacjeFigur
                 timer1.Stop();
                 zatrzymajToolStripMenuItem.Enabled = false;
                 uruchomToolStripMenuItem.Enabled = true;
+            }*/
+
+            Stream s = new FileStream("save_serialization.txt", FileMode.Open);
+            BinaryFormatter bf = new BinaryFormatter();
+            figury = new IFigura[10];
+            for (int i = 0; i < 10; i++)
+            {
+                figury[i] = (Figura)bf.Deserialize(s);
             }
 
-
-            reader.Close();
-        }
-
-        private void saveStatus(object sender, EventArgs e)
-        {
-            StreamWriter writer = new StreamWriter("save.txt");
-            writer.WriteLine(this.Width + " " + this.Height);
-            writer.WriteLine(figury.Length);
-            foreach (Figura figura in figury)
-                figura.Save(writer);
-            writer.WriteLine(timer1.Enabled);
-            writer.Close();
-            wczytajToolStripMenuItem.Enabled = true;
+            panel1.Refresh();
         }
     }
 }
