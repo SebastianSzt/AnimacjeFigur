@@ -1,10 +1,13 @@
 ﻿namespace AnimacjeFigur
 {
-    internal class Kwadrat : Figura
+    [Serializable]
+    public class Kwadrat : Figura
     {
+        public Kwadrat() : base() { }
+
         public Kwadrat(int width, int height) : base(width, height) { }
 
-        public Kwadrat(string[] lines) : base(lines) { }
+        public Kwadrat(string[] line, int method) : base(line, method) { }
 
         public override void Draw(PaintEventArgs e)
         {
@@ -43,6 +46,12 @@
             {
                 posY += vY;
             }
+        }
+
+        public override void ParametersSave(StreamWriter writer)
+        {
+            base.ParametersSave(writer);
+            writer.WriteLine();
         }
     }
 }

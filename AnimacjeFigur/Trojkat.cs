@@ -2,10 +2,13 @@
 
 namespace AnimacjeFigur
 {
-    internal class Trojkat : Figura
+    [Serializable]
+    public class Trojkat : Figura
     {
         [Description("Pozycja figury")]
-        private int position;
+        public int position;
+
+        public Trojkat() : base() { }
 
         public Trojkat(int width, int height) : base(width, height) 
         {
@@ -13,7 +16,11 @@ namespace AnimacjeFigur
             position = random.Next(0, 4);
         }
 
-        public Trojkat(string[] lines) : base(lines) { }
+        public Trojkat(string[] line, int method) : base(line, method)
+        {
+            if (method == 1)
+                position = int.Parse(line[7]);
+        }
 
         public override void Draw(PaintEventArgs e)
         {
@@ -79,6 +86,12 @@ namespace AnimacjeFigur
             {
                 posY += vY;
             }
+        }
+
+        public override void ParametersSave(StreamWriter writer)
+        {
+            base.ParametersSave(writer);
+            writer.WriteLine(" " + position);
         }
     }
 }

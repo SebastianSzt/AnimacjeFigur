@@ -1,10 +1,13 @@
 ﻿namespace AnimacjeFigur
 {
-    internal class Okrag : Figura
+    [Serializable]
+    public class Okrag : Figura
     {
+        public Okrag() : base() { }
+
         public Okrag(int width, int height) : base(width, height) { }
 
-        public Okrag(string[] lines) : base(lines) { }
+        public Okrag(string[] line, int method) : base(line, method) { }
 
         public override void Draw(PaintEventArgs e)
         {
@@ -44,6 +47,12 @@
             {
                 posY += vY;
             }
+        }
+
+        public override void ParametersSave(StreamWriter writer)
+        {
+            base.ParametersSave(writer);
+            writer.WriteLine();
         }
     }
 }
